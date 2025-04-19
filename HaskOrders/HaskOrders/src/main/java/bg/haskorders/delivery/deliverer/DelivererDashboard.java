@@ -115,14 +115,14 @@ public class DelivererDashboard extends JFrame {
     private void showEarnings() {
         LocalDateTime start = LocalDateTime.now().minusDays(30);
         LocalDateTime end = LocalDateTime.now();
-        double threshold = 500.0; // може да е configurable от settings
+        double threshold = 500.0; // Не съм сигурен дали трябва да бъде начисляван само веднъж и дали ще се добави към заплатата на доставчика, също не знам как ще се образува тя. Може ли един доставчик да вземе над 1 бонус
 
         double earnings = deliveryService.getEarnings(deliverer.getUserId().intValue(), start, end);
         boolean hasBonus = deliveryService.hasBonus(deliverer.getUserId().intValue(), start, end, threshold);
 
         JOptionPane.showMessageDialog(this,
                 "Earnings (last 30 days): $" + String.format("%.2f", earnings) +
-                        "\nBonus eligible: " + (hasBonus ? "YES 🎉" : "NO"),
+                        "\nBonus eligible: " + (hasBonus ? "YES" : "NO"),
                 "Earnings Summary",
                 JOptionPane.INFORMATION_MESSAGE);
     }

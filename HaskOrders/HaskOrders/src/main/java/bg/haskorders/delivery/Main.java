@@ -46,9 +46,9 @@ public class Main {
                 .role(Role.CLIENT)
                 .build());
         userList.add(User.builder()
-                .userId(1001L) // Важно: Уникално long ID
+                .userId(1001L) // не знам дали ID-тата трябва да са лонг или не
                 .username("Erturul")
-                .password("erturul123") // примерна парола
+                .password("erturul123")
                 .name("Erturul Test")
                 .email("erturul@dtest.com")
                 .address("Haskovo")
