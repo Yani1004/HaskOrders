@@ -25,6 +25,8 @@ public class UserService {
         return null;
     }
 
+
+
     // Update the role of the user
     public boolean updateUserRole(String username, String newRole) {
         User user = getUserByUsername(username);

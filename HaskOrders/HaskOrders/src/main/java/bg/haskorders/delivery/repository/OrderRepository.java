@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class OrderRepository {
+public class    OrderRepository {
     private final List<Order> orders;
 
     public OrderRepository(List<Order> initialOrders) {
@@ -26,6 +26,7 @@ public class OrderRepository {
         return orders.removeIf(order -> order.getOrder_id() == orderID);
     }
 
+
     public synchronized Optional<Order> findById(int orderId){
         return orders.stream().filter(o -> o.getOrder_id() == orderId).findFirst();
     }
@@ -41,7 +42,7 @@ public class OrderRepository {
                 .orElse(false);
     }
 
-    public synchronized boolean assignDeliveryPerson(int orderId, int deliveryPersonId){
+        public synchronized boolean assignDeliveryPerson(int orderId, int deliveryPersonId){
         Order order = findById(orderId).orElse(null);
         if(order != null && order.getStatus() == OrderStatus.READY_FOR_DELIVERY ){
             order.setDelivery_person_id(deliveryPersonId);
@@ -58,13 +59,35 @@ public class OrderRepository {
                 .sum();
     }
 
+
+
     public synchronized double calculateDeliveryEarnings(int deliveryPersonId, LocalDateTime start, LocalDateTime end){
-        return orders.stream().filter(o -> !o.getOrder_date().isBefore(start)&&
+        return orders.stream()
+                .filter(o -> o.getDelivery_person_id() != null)
+                .filter(o -> !o.getOrder_date().isBefore(start) &&
                         !o.getOrder_date().isAfter(end) &&
                         o.getDelivery_person_id() == deliveryPersonId &&
-                        o.getStatus() == OrderStatus.DELIVERED &&
-                        o.getDelivery_person_id() != null)
+                        o.getStatus() == OrderStatus.DELIVERED)
                 .mapToDouble(Order::getTotal_amount)
                 .sum();
     }
+
+    public synchronized List<Order> getOrdersByStatus(OrderStatus status) {
+        return orders.stream()
+                .filter(order -> order.getStatus() == status)
+                .toList();
+    }
+    public synchronized List<Order> getOrdersByStatusAndDeliveryPerson(OrderStatus status, int deliveryPersonId) {
+        return orders.stream()
+                .filter(order -> order.getStatus() == status &&
+                        order.getDelivery_person_id() != null &&
+                        order.getDelivery_person_id() == deliveryPersonId)
+                .toList();
+    }
+    public synchronized boolean isEligibleForBonus(int deliveryPersonId, double threshold, LocalDateTime start, LocalDateTime end) {
+        double earnings = calculateDeliveryEarnings(deliveryPersonId, start, end);
+        return earnings >= threshold;
+    }
+
+
 }

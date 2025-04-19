@@ -2,22 +2,28 @@ package bg.haskorders.delivery;
 
 import bg.haskorders.delivery.authomation.login.LoginPage;
 import bg.haskorders.delivery.model.Product;
+import bg.haskorders.delivery.model.order.Order;
+import bg.haskorders.delivery.model.order.OrderStatus;
 import bg.haskorders.delivery.model.restaurant.CuisineType;
 import bg.haskorders.delivery.model.restaurant.Restaurant;
 import bg.haskorders.delivery.model.user.Role;
 import bg.haskorders.delivery.model.user.User;
+import bg.haskorders.delivery.repository.OrderRepository;
 import bg.haskorders.delivery.repository.ProductRepository;
 import bg.haskorders.delivery.repository.RestaurantRepository;
 
 import javax.swing.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
+
     public static RestaurantRepository restaurantRepository;
     public static ProductRepository productRepository;
     public static ArrayList<User> userList;
+    public static OrderRepository orderRepository = new OrderRepository(new ArrayList<>());;
 
     public static void main(String[] args) {
 
@@ -39,7 +45,15 @@ public class Main {
                 .email("yani@abv.bg")
                 .role(Role.CLIENT)
                 .build());
-
+        userList.add(User.builder()
+                .userId(1001L) // Важно: Уникално long ID
+                .username("Erturul")
+                .password("erturul123") // примерна парола
+                .name("Erturul Test")
+                .email("erturul@dtest.com")
+                .address("Haskovo")
+                .role(Role.DELIVERER)
+                .build());
 
         // Initialize Restaurant and Product repositories
         ArrayList<Restaurant> restaurantList = new ArrayList<>();
@@ -174,6 +188,38 @@ public class Main {
 
         // Initialize ProductRepository
         productRepository = new ProductRepository(products);
+        List<Order> initialOrders = new ArrayList<>();
+        initialOrders.add(Order.builder()
+                .order_id(1)
+                .user_id(2) // Client ID от userList
+                .restaurant_id(1)
+                .delivery_address("бул. България 45, Хасково")
+                .status(OrderStatus.READY_FOR_DELIVERY)
+                .order_date(LocalDateTime.now().minusMinutes(15))
+                .total_amount(25.50)
+                .build());
+
+        initialOrders.add(Order.builder()
+                .order_id(2)
+                .user_id(2)
+                .restaurant_id(2)
+                .delivery_address("ул. Васил Левски 10, Хасково")
+                .status(OrderStatus.READY_FOR_DELIVERY)
+                .order_date(LocalDateTime.now().minusMinutes(10))
+                .total_amount(32.00)
+                .build());
+
+        initialOrders.add(Order.builder()
+                .order_id(3)
+                .user_id(2)
+                .restaurant_id(3)
+                .delivery_address("ул. Дружба 23, Хасково")
+                .status(OrderStatus.READY_FOR_DELIVERY)
+                .order_date(LocalDateTime.now().minusMinutes(5))
+                .total_amount(18.75)
+                .build());
+
+        orderRepository = new OrderRepository(initialOrders);
 
         // Start the Login Page
         SwingUtilities.invokeLater(() -> new LoginPage(userList));

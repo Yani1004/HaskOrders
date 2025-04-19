@@ -145,7 +145,7 @@ public class LoginPage {
             switch (user.getRole()) {
                 case ADMIN -> new AdminPanel((ArrayList<User>) Main.userList);
                 case EMPLOYEE -> new EmployeeDashboard(user);
-                case DELIVERER -> new DelivererDashboard(user);
+                case DELIVERER -> new DelivererDashboard(user, Main.orderRepository);
                 case CLIENT -> new ClientDashboard(user, Main.restaurantRepository, Main.productRepository);
                 default -> showError("Unknown role");
             }
