@@ -11,9 +11,16 @@ public class PaymentPage extends JFrame {
     private JTextField nameField;
     private JTextField phoneField;
     private JTextArea addressArea;
+    private final Runnable onPaymentComplete;
+
 
     public PaymentPage(Cart cart) {
+        this(cart, null);
+    }
+
+    public PaymentPage(Cart cart, Runnable onPaymentComplete) {
         this.cart = cart;
+        this.onPaymentComplete = onPaymentComplete;
         initialize();
     }
 
@@ -140,6 +147,9 @@ public class PaymentPage extends JFrame {
                         "Address: " + address + "\n" +
                         "Payment: " + cardInfo,
                 "Success", JOptionPane.INFORMATION_MESSAGE);
+        if (onPaymentComplete != null) {
+            onPaymentComplete.run();
+        }
         cart.clear();
         dispose();
     }

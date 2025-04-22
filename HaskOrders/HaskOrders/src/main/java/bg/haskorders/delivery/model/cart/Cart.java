@@ -8,9 +8,12 @@ import java.util.List;
 
 public class Cart {
     private final CartStorage storage;
-    @Getter
-    @Setter
-    private int totalItems;
+    public int getTotalItems() {
+        return storage.getItems().stream()
+                .mapToInt(CartItem::getQuantity)
+                .sum();
+    }
+
 
     public Cart() {
         this(new MemoryCartStorage());

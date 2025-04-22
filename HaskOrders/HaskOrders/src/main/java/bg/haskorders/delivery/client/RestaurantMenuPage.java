@@ -18,6 +18,7 @@ public class RestaurantMenuPage extends JFrame {
     private final List<Product> productList;
     private final Cart cart;
 
+
     public RestaurantMenuPage(Restaurant restaurant, List<Product> productList, Cart cart,
                               RestaurantRepository restaurantRepo, ProductRepository productRepo, User user) {
         this.restaurant = restaurant;
@@ -36,7 +37,9 @@ public class RestaurantMenuPage extends JFrame {
         // Header with restaurant info and image
         add(createHeaderPanel(), BorderLayout.NORTH);
 
-        // Menu items panel
+        // Create bottom panel
+        add(createBottomPanel(restaurantRepo, productRepo, user), BorderLayout.SOUTH);
+
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -49,9 +52,6 @@ public class RestaurantMenuPage extends JFrame {
         JScrollPane scrollPane = new JScrollPane(menuPanel);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         add(scrollPane, BorderLayout.CENTER);
-
-        // Bottom panel with buttons
-        add(createBottomPanel(restaurantRepo, productRepo, user), BorderLayout.SOUTH);
 
         setVisible(true);
     }
@@ -149,6 +149,8 @@ public class RestaurantMenuPage extends JFrame {
         addButton.setForeground(Color.WHITE);
         addButton.addActionListener(e -> {
             cart.addProduct(product, 1);
+
+            updateCartButton();
             JOptionPane.showMessageDialog(this, product.getName() + " added to cart!");
         });
 
@@ -160,7 +162,7 @@ public class RestaurantMenuPage extends JFrame {
 
         return productPanel;
     }
-
+    private JButton viewCartButton;
     private JPanel createBottomPanel(RestaurantRepository restaurantRepo, ProductRepository productRepo, User user) {
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 10));
@@ -172,10 +174,15 @@ public class RestaurantMenuPage extends JFrame {
             new ClientDashboard(user, restaurantRepo, productRepo);
         });
 
-        JButton viewCartButton = new JButton("View Cart (" + cart.getTotalItems() + ")");
+         viewCartButton = new JButton("View Cart (" + cart.getTotalItems() + ")");
         viewCartButton.setBackground(new Color(50, 150, 50));
         viewCartButton.setForeground(Color.WHITE);
-        viewCartButton.addActionListener(e -> new CartPage(cart));
+        viewCartButton.addActionListener(e -> {
+            new CartPage(cart, () -> {
+                updateCartButton();
+            });
+        });
+
 
         bottomPanel.add(backButton);
         bottomPanel.add(viewCartButton);
@@ -230,5 +237,12 @@ public class RestaurantMenuPage extends JFrame {
 
         g.dispose();
         return new ImageIcon(image);
+    }
+    private void updateCartButton() {
+        SwingUtilities.invokeLater(() -> {
+            viewCartButton.setText("View Cart (" + cart.getTotalItems() + ")");
+            viewCartButton.revalidate();
+            viewCartButton.repaint();
+        });
     }
 }

@@ -10,11 +10,20 @@ import java.awt.event.ActionEvent;
 
 public class CartPage extends JFrame {
     private final Cart cart;
+    private final Runnable onCartCleared;
 
-    public CartPage(Cart cart) {
+    // Constructor with callback
+    public CartPage(Cart cart, Runnable onCartCleared) {
         this.cart = cart;
+        this.onCartCleared = onCartCleared;
         initialize();
     }
+
+
+    public CartPage(Cart cart) {
+        this(cart, () -> {});
+    }
+
 
     private void initialize() {
         setTitle("Your Cart");
@@ -131,7 +140,12 @@ public class CartPage extends JFrame {
             JOptionPane.showMessageDialog(this, "Your cart is empty!");
         } else {
             this.dispose();
-            new PaymentPage(cart);
+            new PaymentPage(cart, () -> {
+                if (onCartCleared != null) {
+                    onCartCleared.run();
+                }
+            });
+
         }
     }
 

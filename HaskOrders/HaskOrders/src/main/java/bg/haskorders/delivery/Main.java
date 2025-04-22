@@ -31,6 +31,7 @@ public class Main {
         userList = new ArrayList<>();
         String adminPassword = "12345678";
         userList.add(User.builder()
+                .userId(1002L)
                 .username("admin")
                 .password(adminPassword) // Not hashed
                 .name("System Administrator")
@@ -38,6 +39,7 @@ public class Main {
                 .role(Role.ADMIN)
                 .build());
         userList.add(User.builder()
+                .userId(1003L)
                 .username("yani")
                 .password("12345678")
                 .address("Razlog")
@@ -54,6 +56,7 @@ public class Main {
                 .address("Haskovo")
                 .role(Role.DELIVERER)
                 .build());
+
 
         // Initialize Restaurant and Product repositories
         ArrayList<Restaurant> restaurantList = new ArrayList<>();
