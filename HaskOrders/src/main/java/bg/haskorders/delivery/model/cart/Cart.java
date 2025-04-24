@@ -1,77 +1,63 @@
 package bg.haskorders.delivery.model.cart;
 
 import bg.haskorders.delivery.model.Product;
-import lombok.Getter;
-import lombok.Setter;
+import bg.haskorders.delivery.model.user.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Cart {
-    private final CartStorage storage;
-    @Getter
-    @Setter
-    private int totalItems;
+    private final List<CartItem> items;
+    private final User user;
 
-    public Cart() {
-        this(new MemoryCartStorage());
-    }
-
-    public Cart(CartStorage storage) {
-        this.storage = storage;
-    }
-
-    public void addProduct(Product product, int quantity) {
-        // Проверка дали продуктът вече е в количката
-        for (int i = 0; i < storage.getItems().size(); i++) {
-            CartItem item = storage.getItems().get(i);
-            if (item.getProduct().equals(product)) {
-                CartItem updatedItem = new BasicCartItem(
-                        product,
-                        item.getQuantity() + quantity
-                );
-                storage.updateItem(i, updatedItem);
-                return;
-            }
-        }
-        // Ако продуктът не е в количката, добавяме го
-        storage.addItem(new BasicCartItem(product, quantity));
-    }
-
-    public void removeItem(int index) {
-        storage.removeItem(index);
-    }
-
-    public void updateQuantity(int index, int newQuantity) {
-        List<CartItem> items = storage.getItems();
-        if (index >= 0 && index < items.size() && newQuantity > 0) {
-            CartItem item = items.get(index);
-            storage.updateItem(index, new BasicCartItem(
-                    item.getProduct(),
-                    newQuantity
-            ));
-        }
-    }
-
-    public void clear() {
-        storage.clear();
-    }
-
-    public double getTotalPrice() {
-        return storage.getItems().stream()
-                .mapToDouble(CartItem::getTotalPrice)
-                .sum();
+    public Cart(User user) {
+        this.user = user;
+        this.items = new ArrayList<>();
     }
 
     public List<CartItem> getItems() {
-        return storage.getItems();
+        return items;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void addProduct(Product product, int quantity) {
+        for (CartItem item : items) {
+            if (item.getProduct().getProduct_id() == product.getProduct_id()) {
+                item.setQuantity(item.getQuantity() + quantity);
+                return;
+            }
+        }
+        items.add(new CartItem(product, quantity));
+    }
+
+    public void removeItem(int index) {
+        if (index >= 0 && index < items.size()) {
+            items.remove(index);
+        }
+    }
+
+    public void updateQuantity(int index, int newQuantity) {
+        if (index >= 0 && index < items.size()) {
+            items.get(index).setQuantity(newQuantity);
+        }
+    }
+
+    public double getTotalPrice() {
+        return items.stream().mapToDouble(CartItem::getTotalPrice).sum();
+    }
+
+    public int getTotalItems() {
+        return items.stream().mapToInt(CartItem::getQuantity).sum();
     }
 
     public boolean isEmpty() {
-        return storage.getItems().isEmpty();
+        return items.isEmpty();
     }
 
-    public int getItemCount() {
-        return storage.getItems().size();
+    public void clear() {
+        items.clear();
     }
-
 }

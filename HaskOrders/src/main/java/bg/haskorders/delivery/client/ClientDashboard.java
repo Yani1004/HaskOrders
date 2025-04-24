@@ -1,5 +1,6 @@
 package bg.haskorders.delivery.client;
 
+import bg.haskorders.delivery.authomation.login.LoginPage;
 import bg.haskorders.delivery.model.cart.Cart;
 import bg.haskorders.delivery.model.Product;
 import bg.haskorders.delivery.model.restaurant.CuisineType;
@@ -7,6 +8,7 @@ import bg.haskorders.delivery.model.restaurant.Restaurant;
 import bg.haskorders.delivery.model.user.User;
 import bg.haskorders.delivery.repository.ProductRepository;
 import bg.haskorders.delivery.repository.RestaurantRepository;
+import bg.haskorders.delivery.repository.OrderRepository;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +22,9 @@ public class ClientDashboard extends JFrame {
     private final User clientUser;
     private final RestaurantRepository restaurantRepository;
     private final ProductRepository productRepository;
-    private final Cart sharedCart = new Cart();
+    private final OrderRepository orderRepository;
+    private Cart sharedCart;
+
 
     private JFrame frame;
     private JPanel filterPanel;
@@ -32,8 +36,10 @@ public class ClientDashboard extends JFrame {
 
     public ClientDashboard(User clientUser, RestaurantRepository restaurantRepository, ProductRepository productRepository) {
         this.clientUser = clientUser;
-        this.restaurantRepository = restaurantRepository;
-        this.productRepository = productRepository;
+        this.sharedCart = new Cart(clientUser);
+        this.restaurantRepository = RestaurantRepository.getInstance();
+        this.productRepository = ProductRepository.getInstance();
+        this.orderRepository = OrderRepository.getInstance();
         initialize();
     }
 
@@ -115,7 +121,24 @@ public class ClientDashboard extends JFrame {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.setOpaque(false);
+
+        filterButton = new JButton("Filter");
+        styleButton(filterButton, new Color(255, 112, 67));
+        filterButton.addActionListener(this::toggleFilters);
         buttonPanel.add(filterButton);
+
+        JButton trackOrderButton = new JButton("Track My Order");
+        styleButton(trackOrderButton, new Color(33, 150, 243)); // blue
+        trackOrderButton.addActionListener(e -> new OrderStatusPage(clientUser));
+        buttonPanel.add(trackOrderButton);
+
+        JButton logoutButton = new JButton("Logout");
+        styleButton(logoutButton, new Color(244, 67, 54));
+        logoutButton.addActionListener(e -> {
+            frame.dispose();
+            new LoginPage(bg.haskorders.delivery.Main.userList);
+        });
+        buttonPanel.add(logoutButton);
 
         headerPanel.add(buttonPanel, BorderLayout.EAST);
         return headerPanel;

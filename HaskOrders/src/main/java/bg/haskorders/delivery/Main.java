@@ -2,14 +2,18 @@ package bg.haskorders.delivery;
 
 import bg.haskorders.delivery.authomation.login.LoginPage;
 import bg.haskorders.delivery.model.Product;
+import bg.haskorders.delivery.model.order.Order;
+import bg.haskorders.delivery.model.order.OrderStatus;
 import bg.haskorders.delivery.model.restaurant.CuisineType;
 import bg.haskorders.delivery.model.restaurant.Restaurant;
 import bg.haskorders.delivery.model.user.Role;
 import bg.haskorders.delivery.model.user.User;
+import bg.haskorders.delivery.repository.OrderRepository;
 import bg.haskorders.delivery.repository.ProductRepository;
 import bg.haskorders.delivery.repository.RestaurantRepository;
 
 import javax.swing.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +22,7 @@ public class Main {
     public static RestaurantRepository restaurantRepository;
     public static ProductRepository productRepository;
     public static ArrayList<User> userList;
+    public static OrderRepository orderRepository;
 
     public static void main(String[] args) {
 
@@ -25,6 +30,7 @@ public class Main {
         userList = new ArrayList<>();
         String adminPassword = "12345678";
         userList.add(User.builder()
+                .userId(2)
                 .username("admin")
                 .password(adminPassword) // Not hashed
                 .name("System Administrator")
@@ -32,6 +38,7 @@ public class Main {
                 .role(Role.ADMIN)
                 .build());
         userList.add(User.builder()
+                .userId(1)
                 .username("yani")
                 .password("12345678")
                 .address("Razlog")
@@ -39,7 +46,24 @@ public class Main {
                 .email("yani@abv.bg")
                 .role(Role.CLIENT)
                 .build());
-
+        userList.add(User.builder()
+                .userId(3)
+                .username("teodor")
+                .password("12345678")
+                .address("Razlog")
+                .name("System Yani")
+                .email("yani@abv.bg")
+                .role(Role.EMPLOYEE)
+                .build());
+        userList.add(User.builder()
+                .userId(4) // не знам дали ID-тата трябва да са лонг или не
+                .username("ertaka")
+                .password("12345678")
+                .name("Erturul Test")
+                .email("erturul@dtest.com")
+                .address("Haskovo")
+                .role(Role.DELIVERER)
+                .build());
 
         // Initialize Restaurant and Product repositories
         ArrayList<Restaurant> restaurantList = new ArrayList<>();
@@ -89,7 +113,6 @@ public class Main {
                 .imagePath("/images/restaurants/bakery-logo.jpg")
                 .build());
 
-        restaurantRepository = new RestaurantRepository(restaurantList);
 
         List<Product> products = new ArrayList<>();
 
@@ -172,10 +195,29 @@ public class Main {
                 .imagePath("/images/products/Strawberry-Cheesecake.jpg")
                 .build());
 
-        // Initialize ProductRepository
-        productRepository = new ProductRepository(products);
 
-        // Start the Login Page
+        ProductRepository productRepo = ProductRepository.getInstance();
+        for (Product p : products) {
+            productRepo.addProduct(p);
+        }
+
+        RestaurantRepository restaurantRepo = RestaurantRepository.getInstance();
+        for (Restaurant restaurant : restaurantList) {
+            restaurantRepo.addRestaurant(restaurant);
+        }
+
+        OrderRepository orderRepo = OrderRepository.getInstance();
+        User yaniUser = userList.stream()
+                .filter(u -> u.getUsername().equals("yani"))
+                .findFirst()
+                .orElse(null);
+
+        if (yaniUser != null) {
+            ProductRepository pr = ProductRepository.getInstance();
+            Product cheeseburger = pr.getAllProducts().stream().filter(p -> p.getProduct_id() == 1).findFirst().orElse(null);
+            Product sushiRoll = pr.getAllProducts().stream().filter(p -> p.getProduct_id() == 3).findFirst().orElse(null);
+
+        }
         SwingUtilities.invokeLater(() -> new LoginPage(userList));
     }
 }
