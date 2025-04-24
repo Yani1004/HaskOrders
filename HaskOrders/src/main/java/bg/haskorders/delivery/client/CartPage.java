@@ -3,6 +3,9 @@ package bg.haskorders.delivery.client;
 import bg.haskorders.delivery.model.cart.Cart;
 import bg.haskorders.delivery.model.Product;
 import bg.haskorders.delivery.model.cart.CartItem;
+import bg.haskorders.delivery.model.order.Order;
+import bg.haskorders.delivery.model.order.OrderStatus;
+import bg.haskorders.delivery.repository.OrderRepository;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,9 +13,11 @@ import java.awt.event.ActionEvent;
 
 public class CartPage extends JFrame {
     private final Cart cart;
+    private final Runnable onCartUpdated;
 
-    public CartPage(Cart cart) {
+    public CartPage(Cart cart, Runnable onCartUpdated) {
         this.cart = cart;
+        this.onCartUpdated = onCartUpdated;
         initialize();
     }
 
@@ -87,6 +92,7 @@ public class CartPage extends JFrame {
         decreaseBtn.addActionListener(e -> {
             if (item.getQuantity() > 1) {
                 cart.updateQuantity(index, item.getQuantity() - 1);
+                if (onCartUpdated != null) onCartUpdated.run();
                 refreshCart();
             } else {
                 cart.removeItem(index);
@@ -99,6 +105,7 @@ public class CartPage extends JFrame {
         JButton increaseBtn = new JButton("+");
         increaseBtn.addActionListener(e -> {
             cart.updateQuantity(index, item.getQuantity() + 1);
+            if (onCartUpdated != null) onCartUpdated.run();
             refreshCart();
         });
 
@@ -109,6 +116,7 @@ public class CartPage extends JFrame {
         JButton removeButton = new JButton("Remove");
         removeButton.addActionListener(e -> {
             cart.removeItem(index);
+            if (onCartUpdated != null) onCartUpdated.run();
             refreshCart();
         });
 
@@ -123,17 +131,29 @@ public class CartPage extends JFrame {
 
     private void refreshCart() {
         this.dispose();
-        new CartPage(cart);
+        new CartPage(cart, onCartUpdated);
     }
 
     private void checkoutAction(ActionEvent e) {
         if (cart.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Your cart is empty!");
-        } else {
-            JOptionPane.showMessageDialog(this, "Order placed successfully!");
-            cart.clear();
-            this.dispose();
+            return;
         }
+
+        OrderRepository orderRepository = OrderRepository.getInstance();
+
+        int newOrderId = orderRepository.getAllOrders().stream()
+                .mapToInt(Order::getOrder_id)
+                .max()
+                .orElse(0) + 1;
+
+        new PaymentPage(cart, () -> {
+            if (onCartUpdated != null) onCartUpdated.run();
+            this.dispose();
+        });
+
+        JOptionPane.showMessageDialog(this, "Order placed successfully!");
+        this.dispose();
     }
 
     private void clearCartAction(ActionEvent e) {
@@ -146,7 +166,10 @@ public class CartPage extends JFrame {
 
         if (confirm == JOptionPane.YES_OPTION) {
             cart.clear();
-            refreshCart();
+            if (onCartUpdated != null) {
+                onCartUpdated.run();
+            }
+            this.dispose();
         }
     }
 }

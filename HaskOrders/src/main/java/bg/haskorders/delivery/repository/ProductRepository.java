@@ -9,15 +9,18 @@ import java.util.List;
 
 
 public class ProductRepository {
+    private static ProductRepository instance;
     private final List<Product> products;
 
-    // Constructor with null safety check
-    public ProductRepository(List<Product> products) {
-        if (products == null) {
-            this.products = new ArrayList<>();
-        } else {
-            this.products = products;
+    private ProductRepository() {
+        this.products = new ArrayList<>();
+    }
+
+    public static synchronized ProductRepository getInstance() {
+        if (instance == null) {
+            instance = new ProductRepository();
         }
+        return instance;
     }
 
     // Synchronized methods to ensure thread safety
@@ -60,7 +63,7 @@ public class ProductRepository {
     }
 
     public synchronized List<Product> getAllProducts() {
-        return Collections.unmodifiableList(new ArrayList<>(products));
+        return (products != null) ? Collections.unmodifiableList(new ArrayList<>(products)) : Collections.emptyList();
     }
     public List<Product> findByRestaurant(Long restaurantId) {
         List<Product> restaurantProducts = new ArrayList<>();

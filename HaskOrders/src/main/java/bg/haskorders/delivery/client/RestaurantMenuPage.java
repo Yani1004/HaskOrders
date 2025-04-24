@@ -12,11 +12,15 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
+import bg.haskorders.delivery.repository.OrderRepository;
+import bg.haskorders.delivery.model.order.Order;
+import bg.haskorders.delivery.model.order.OrderStatus;
 
 public class RestaurantMenuPage extends JFrame {
     private final Restaurant restaurant;
     private final List<Product> productList;
     private final Cart cart;
+    private JButton viewCartButton;
 
     public RestaurantMenuPage(Restaurant restaurant, List<Product> productList, Cart cart,
                               RestaurantRepository restaurantRepo, ProductRepository productRepo, User user) {
@@ -150,6 +154,7 @@ public class RestaurantMenuPage extends JFrame {
         addButton.addActionListener(e -> {
             cart.addProduct(product, 1);
             JOptionPane.showMessageDialog(this, product.getName() + " added to cart!");
+            viewCartButton.setText("View Cart (" + cart.getTotalItems() + ")");
         });
 
         rightPanel.add(priceLabel);
@@ -172,13 +177,17 @@ public class RestaurantMenuPage extends JFrame {
             new ClientDashboard(user, restaurantRepo, productRepo);
         });
 
-        JButton viewCartButton = new JButton("View Cart (" + cart.getTotalItems() + ")");
+        viewCartButton = new JButton("View Cart (" + cart.getTotalItems() + ")");
         viewCartButton.setBackground(new Color(50, 150, 50));
         viewCartButton.setForeground(Color.WHITE);
-        viewCartButton.addActionListener(e -> new CartPage(cart));
+        viewCartButton.addActionListener(e -> new CartPage(cart, () -> {
+            viewCartButton.setText("View Cart (" + cart.getTotalItems() + ")");
+        }));
 
         bottomPanel.add(backButton);
         bottomPanel.add(viewCartButton);
+
+
 
         return bottomPanel;
     }
