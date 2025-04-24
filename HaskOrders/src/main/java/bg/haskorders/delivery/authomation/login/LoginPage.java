@@ -137,7 +137,7 @@ public class LoginPage {
 
     private void openRegisterPage() {
         frame.dispose();
-        new RegisterPage(new ArrayList<>());
+        new RegisterPage(Main.userList);
     }
 
     private void openDashboard(User user) {
