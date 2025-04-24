@@ -46,11 +46,11 @@ public class RegisterPage {
         errorWarning.setVisible(false);
 
         JButton registerButton = createButton("Register", UIConstants.PRIMARY_COLOR);
-        JButton backButton = createButton("Back to Login", Color.DARK_GRAY);
+//        JButton backButton = createButton("Back to Login", Color.DARK_GRAY);
 
 
         addFields(panel, title, userText, passText, confirmPassText,
-                emailText, nameText, phoneText, addressText, registerButton, backButton);
+                emailText, nameText, phoneText, addressText, registerButton);
 
 
         // Register logic
@@ -113,10 +113,10 @@ public class RegisterPage {
             new LoginPage(usersList);
         });
 
-        backButton.addActionListener(e -> {
-            frame.dispose();
-            new LoginPage(usersList);
-        });
+//        backButton.addActionListener(e -> {
+//            frame.dispose();
+//            new LoginPage(usersList);
+//        });
 
         passText.addActionListener(e -> {
             String password = new String(passText.getPassword());
@@ -129,7 +129,7 @@ public class RegisterPage {
     private void addFields(JPanel panel, JLabel title,
                            JTextField userText, JPasswordField passText, JPasswordField confirmPassText,
                            JTextField emailText, JTextField nameText, JTextField phoneText, JTextField addressText,
-                           JButton registerButton, JButton backButton) {
+                           JButton registerButton) {
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 10, 8, 10);
@@ -172,8 +172,8 @@ public class RegisterPage {
         gbc.fill = GridBagConstraints.CENTER;
         panel.add(registerButton, gbc);
 
-        gbc.gridy += 1;
-        panel.add(backButton, gbc);
+//        gbc.gridy += 1;
+//        panel.add(backButton, gbc);
     }
 
 

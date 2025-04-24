@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
+
 public class AdminPanel {
     private ArrayList<User> usersList;
     private JFrame frame;
@@ -33,14 +34,13 @@ public class AdminPanel {
         // Layout
         frame.setLayout(new BorderLayout());
         frame.add(new JScrollPane(userTable), BorderLayout.CENTER);
-        assert controlPanel != null;
         frame.add(controlPanel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
     }
 
     private void createUserTable() {
-        String[] columnNames = {"Username", "Name", "Email", "Current Role", "Status"};
+        String[] columnNames = {"Username", "Name", "Email", "Current Role"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -53,13 +53,29 @@ public class AdminPanel {
         refreshUserTable();
     }
 
+    private void refreshUserTable() {
+        tableModel.setRowCount(0);
+        for (User user : usersList) {
+            tableModel.addRow(new Object[]{
+                    user.getUsername(),
+                    user.getName(),
+                    user.getEmail(),
+                    user.getRole()
+            });
+        }
+    }
+
     private void createControlPanel() {
         controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         controlPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Role management components
         JLabel roleLabel = new JLabel("Change Role:");
-        String[] roles = {String.valueOf(Role.CLIENT), String.valueOf(Role.EMPLOYEE), String.valueOf(Role.DELIVERER)};
+        String[] roles = {
+                String.valueOf(Role.CLIENT),
+                String.valueOf(Role.EMPLOYEE),
+                String.valueOf(Role.DELIVERER)
+        };
         JComboBox<String> roleCombo = new JComboBox<>(roles);
 
         JButton updateButton = new JButton("Update Role");
@@ -70,7 +86,6 @@ public class AdminPanel {
         refreshButton.setBackground(new Color(169, 169, 169));
         refreshButton.setForeground(Color.WHITE);
 
-        // Add Logout button
         JButton logoutButton = new JButton("Logout");
         logoutButton.setBackground(new Color(220, 53, 69));
         logoutButton.setForeground(Color.WHITE);
@@ -88,39 +103,13 @@ public class AdminPanel {
         controlPanel.add(logoutButton);
     }
 
-    private void logout() {
-        int confirm = JOptionPane.showConfirmDialog(
-                frame,
-                "Are you sure you want to logout?",
-                "Confirm Logout",
-                JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            frame.dispose();
-            new LoginPage(usersList);
-        }
-    }
-
-    private void refreshUserTable() {
-        tableModel.setRowCount(0);
-        for (User user : usersList) {
-            tableModel.addRow(new Object[]{
-                    user.getUsername(),
-                    user.getName(),
-                    user.getEmail(),
-                    user.getRole(),
-                    user.getRole().equals(Role.ADMIN) ? "Admin" : "Active"
-            });
-        }
-    }
-
     private void updateUserRole(JComboBox<String> roleCombo) {
         int selectedRow = userTable.getSelectedRow();
         if (selectedRow >= 0) {
             String username = (String) tableModel.getValueAt(selectedRow, 0);
             String newRole = (String) roleCombo.getSelectedItem();
 
-            if (username.equals("admin")) {
+            if ("admin".equals(username)) {
                 JOptionPane.showMessageDialog(frame,
                         "Cannot change role of admin account!",
                         "Warning",
@@ -132,7 +121,6 @@ public class AdminPanel {
                 if (user.getUsername().equals(username)) {
                     user.setRole(Role.valueOf(newRole));
                     tableModel.setValueAt(newRole, selectedRow, 3);
-                    tableModel.setValueAt("Active", selectedRow, 4);
                     JOptionPane.showMessageDialog(frame,
                             "Role updated successfully!\n" +
                                     username + " is now a " + newRole,
@@ -146,6 +134,19 @@ public class AdminPanel {
                     "Please select a user first!",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void logout() {
+        int confirm = JOptionPane.showConfirmDialog(
+                frame,
+                "Are you sure you want to logout?",
+                "Confirm Logout",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            frame.dispose();
+            new LoginPage(usersList);
         }
     }
 }
