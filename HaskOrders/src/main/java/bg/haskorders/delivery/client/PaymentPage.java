@@ -53,9 +53,6 @@ public class PaymentPage extends JFrame {
         nameField = new JTextField();
         phoneField = new JTextField();
         addressArea = new JTextArea();
-//        addressArea = new JTextArea(4, 20);
-//        addressArea.setLineWrap(true);
-//        addressArea.setWrapStyleWord(true);
 
         gbc.gridx = 0; gbc.gridy = 0;
         formPanel.add(new JLabel("Name:"), gbc);
@@ -91,6 +88,10 @@ public class PaymentPage extends JFrame {
             JOptionPane.showMessageDialog(this, "Please fill out all fields before proceeding.");
             return;
         }
+       if( phone.length() != 10 || !phone.matches("\\d+")){
+           JOptionPane.showMessageDialog(this, "Please enter valid phone number (10 digits)!");
+           return;
+       }
 
         getContentPane().removeAll();
 
@@ -116,7 +117,7 @@ public class PaymentPage extends JFrame {
             if (cardField.getEchoChar() == (char) 0) {
                 cardField.setEchoChar('•');
             } else {
-                cardField.setEchoChar((char) 0); // show characters
+                cardField.setEchoChar((char) 0);
             }
         });
 

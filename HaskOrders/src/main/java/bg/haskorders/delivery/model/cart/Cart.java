@@ -2,62 +2,59 @@ package bg.haskorders.delivery.model.cart;
 
 import bg.haskorders.delivery.model.Product;
 import bg.haskorders.delivery.model.user.User;
+import bg.haskorders.delivery.repository.cartRepo.CartStorage;
+import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
+
+@Data
 public class Cart {
-    private final List<CartItem> items;
+    private final CartStorage storage;
     private final User user;
 
-    public Cart(User user) {
+    public Cart(User user, CartStorage storage) {
         this.user = user;
-        this.items = new ArrayList<>();
+        this.storage = storage;
     }
 
     public List<CartItem> getItems() {
-        return items;
-    }
-
-    public User getUser() {
-        return user;
+        return storage.getItems();
     }
 
     public void addProduct(Product product, int quantity) {
-        for (CartItem item : items) {
+        List<CartItem> items = storage.getItems();
+        for (int i = 0; i < items.size(); i++) {
+            CartItem item = items.get(i);
             if (item.getProduct().getProduct_id() == product.getProduct_id()) {
-                item.setQuantity(item.getQuantity() + quantity);
+                storage.updateItemQuantity(i, item.getQuantity() + quantity);
                 return;
             }
         }
-        items.add(new CartItem(product, quantity));
+        storage.addItem(new CartItem(product, quantity));
     }
 
     public void removeItem(int index) {
-        if (index >= 0 && index < items.size()) {
-            items.remove(index);
-        }
+        storage.removeItem(index);
     }
 
     public void updateQuantity(int index, int newQuantity) {
-        if (index >= 0 && index < items.size()) {
-            items.get(index).setQuantity(newQuantity);
-        }
+        storage.updateItemQuantity(index, newQuantity);
     }
 
     public double getTotalPrice() {
-        return items.stream().mapToDouble(CartItem::getTotalPrice).sum();
+        return storage.getItems().stream().mapToDouble(CartItem::getTotalPrice).sum();
     }
 
     public int getTotalItems() {
-        return items.stream().mapToInt(CartItem::getQuantity).sum();
+        return storage.getItems().stream().mapToInt(CartItem::getQuantity).sum();
     }
 
     public boolean isEmpty() {
-        return items.isEmpty();
+        return storage.getItems().isEmpty();
     }
 
     public void clear() {
-        items.clear();
+        storage.clear();
     }
 }

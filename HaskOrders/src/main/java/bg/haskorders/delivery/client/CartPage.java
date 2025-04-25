@@ -3,13 +3,12 @@ package bg.haskorders.delivery.client;
 import bg.haskorders.delivery.model.cart.Cart;
 import bg.haskorders.delivery.model.Product;
 import bg.haskorders.delivery.model.cart.CartItem;
-import bg.haskorders.delivery.model.order.Order;
-import bg.haskorders.delivery.model.order.OrderStatus;
 import bg.haskorders.delivery.repository.OrderRepository;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 public class CartPage extends JFrame {
     private final Cart cart;
@@ -35,13 +34,13 @@ public class CartPage extends JFrame {
         JPanel itemsPanel = new JPanel(new GridLayout(0, 1, 10, 10));
         itemsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        if (cart.isEmpty()) {
+        List<CartItem> items = cart.getItems();
+        if (items.isEmpty()) {
             JLabel emptyLabel = new JLabel("Your cart is empty", SwingConstants.CENTER);
             itemsPanel.add(emptyLabel);
         } else {
-            for (int i = 0; i < cart.getItems().size(); i++) {
-                CartItem item = cart.getItems().get(i);
-                itemsPanel.add(createCartItemPanel(item, i));
+            for (int i = 0; i < items.size(); i++) {
+                itemsPanel.add(createCartItemPanel(items.get(i), i));
             }
         }
 
@@ -50,24 +49,22 @@ public class CartPage extends JFrame {
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
 
-        // Total price panel
         JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JLabel totalLabel = new JLabel("Total: $" + String.format("%.2f", cart.getTotalPrice()));
         totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
         totalPanel.add(totalLabel);
         bottomPanel.add(totalPanel, BorderLayout.NORTH);
 
-        // Buttons panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
 
-        JButton checkoutButton = new JButton("Checkout");
-        checkoutButton.addActionListener(this::checkoutAction);
+        JButton finishOrderButton = new JButton("Finish order");
+        finishOrderButton.addActionListener(this::checkoutAction);
 
         JButton clearButton = new JButton("Clear Cart");
         clearButton.addActionListener(this::clearCartAction);
 
         buttonPanel.add(clearButton);
-        buttonPanel.add(checkoutButton);
+        buttonPanel.add(finishOrderButton);
         bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(bottomPanel, BorderLayout.SOUTH);
@@ -85,19 +82,17 @@ public class CartPage extends JFrame {
         nameLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        // Panel for quantity controls
         JPanel quantityPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
 
         JButton decreaseBtn = new JButton("-");
         decreaseBtn.addActionListener(e -> {
             if (item.getQuantity() > 1) {
                 cart.updateQuantity(index, item.getQuantity() - 1);
-                if (onCartUpdated != null) onCartUpdated.run();
-                refreshCart();
             } else {
                 cart.removeItem(index);
-                refreshCart();
             }
+            if (onCartUpdated != null) onCartUpdated.run();
+            refreshCart();
         });
 
         JLabel quantityLabel = new JLabel(String.valueOf(item.getQuantity()));
@@ -143,7 +138,7 @@ public class CartPage extends JFrame {
         OrderRepository orderRepository = OrderRepository.getInstance();
 
         int newOrderId = orderRepository.getAllOrders().stream()
-                .mapToInt(Order::getOrder_id)
+                .mapToInt(order -> order.getOrder_id())
                 .max()
                 .orElse(0) + 1;
 
@@ -152,8 +147,6 @@ public class CartPage extends JFrame {
             this.dispose();
         });
 
-        JOptionPane.showMessageDialog(this, "Order placed successfully!");
-        this.dispose();
     }
 
     private void clearCartAction(ActionEvent e) {

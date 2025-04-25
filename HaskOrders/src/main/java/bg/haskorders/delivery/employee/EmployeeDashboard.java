@@ -1,7 +1,7 @@
 package bg.haskorders.delivery.employee;
 
 import bg.haskorders.delivery.Main;
-import bg.haskorders.delivery.authomation.login.LoginPage;
+import bg.haskorders.delivery.authentication.LoginView;
 import bg.haskorders.delivery.constants.UIConstants;
 import bg.haskorders.delivery.model.*;
 import bg.haskorders.delivery.model.order.Order;
@@ -71,7 +71,7 @@ public class EmployeeDashboard {
         logoutButton.setForeground(Color.WHITE);
         logoutButton.addActionListener(e -> {
             frame.dispose();
-            new LoginPage(Main.userList);
+            new LoginView(Main.userList);
         });
 
         headerPanel.add(welcomeLabel, BorderLayout.WEST);

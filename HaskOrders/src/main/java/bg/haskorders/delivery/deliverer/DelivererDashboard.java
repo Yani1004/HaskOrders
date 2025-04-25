@@ -1,11 +1,9 @@
 package bg.haskorders.delivery.deliverer;
 
 import bg.haskorders.delivery.Main;
-import bg.haskorders.delivery.authomation.login.LoginPage;
+import bg.haskorders.delivery.authentication.LoginView;
 import bg.haskorders.delivery.model.order.Order;
 import bg.haskorders.delivery.model.user.User;
-import bg.haskorders.delivery.deliverer.DelivererService;
-import bg.haskorders.delivery.repository.OrderRepository;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +52,7 @@ public class DelivererDashboard extends JFrame {
 
             if (confirm == JOptionPane.YES_OPTION) {
                 this.dispose();
-                new LoginPage(Main.userList);
+                new LoginView(Main.userList);
             }
         });
 

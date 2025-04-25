@@ -1,6 +1,6 @@
 package bg.haskorders.delivery.client;
 
-import bg.haskorders.delivery.authomation.login.LoginPage;
+import bg.haskorders.delivery.authentication.LoginView;
 import bg.haskorders.delivery.model.cart.Cart;
 import bg.haskorders.delivery.model.Product;
 import bg.haskorders.delivery.model.restaurant.CuisineType;
@@ -9,14 +9,18 @@ import bg.haskorders.delivery.model.user.User;
 import bg.haskorders.delivery.repository.ProductRepository;
 import bg.haskorders.delivery.repository.RestaurantRepository;
 import bg.haskorders.delivery.repository.OrderRepository;
+import bg.haskorders.delivery.repository.cartRepo.CartStorage;
+import bg.haskorders.delivery.repository.cartRepo.MemoryCartStorage;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 public class ClientDashboard extends JFrame {
     private final User clientUser;
@@ -36,7 +40,7 @@ public class ClientDashboard extends JFrame {
 
     public ClientDashboard(User clientUser, RestaurantRepository restaurantRepository, ProductRepository productRepository) {
         this.clientUser = clientUser;
-        this.sharedCart = new Cart(clientUser);
+        this.sharedCart = new Cart(clientUser, new MemoryCartStorage());
         this.restaurantRepository = RestaurantRepository.getInstance();
         this.productRepository = ProductRepository.getInstance();
         this.orderRepository = OrderRepository.getInstance();
@@ -136,7 +140,7 @@ public class ClientDashboard extends JFrame {
         styleButton(logoutButton, new Color(244, 67, 54));
         logoutButton.addActionListener(e -> {
             frame.dispose();
-            new LoginPage(bg.haskorders.delivery.Main.userList);
+            new LoginView(bg.haskorders.delivery.Main.userList);
         });
         buttonPanel.add(logoutButton);
 

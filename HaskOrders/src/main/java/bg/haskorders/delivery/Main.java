@@ -1,9 +1,7 @@
 package bg.haskorders.delivery;
 
-import bg.haskorders.delivery.authomation.login.LoginPage;
+import bg.haskorders.delivery.authentication.LoginView;
 import bg.haskorders.delivery.model.Product;
-import bg.haskorders.delivery.model.order.Order;
-import bg.haskorders.delivery.model.order.OrderStatus;
 import bg.haskorders.delivery.model.restaurant.CuisineType;
 import bg.haskorders.delivery.model.restaurant.Restaurant;
 import bg.haskorders.delivery.model.user.Role;
@@ -11,9 +9,9 @@ import bg.haskorders.delivery.model.user.User;
 import bg.haskorders.delivery.repository.OrderRepository;
 import bg.haskorders.delivery.repository.ProductRepository;
 import bg.haskorders.delivery.repository.RestaurantRepository;
+import bg.haskorders.delivery.repository.cartRepo.CartStorage;
 
 import javax.swing.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +21,7 @@ public class Main {
     public static ProductRepository productRepository;
     public static ArrayList<User> userList;
     public static OrderRepository orderRepository;
-
+    public static CartStorage cartStorage;
     public static void main(String[] args) {
 
         // Initialize User List with a hardcoded Admin user and other users
@@ -218,6 +216,6 @@ public class Main {
             Product sushiRoll = pr.getAllProducts().stream().filter(p -> p.getProduct_id() == 3).findFirst().orElse(null);
 
         }
-        SwingUtilities.invokeLater(() -> new LoginPage(userList));
+        SwingUtilities.invokeLater(() -> new LoginView(userList));
     }
 }

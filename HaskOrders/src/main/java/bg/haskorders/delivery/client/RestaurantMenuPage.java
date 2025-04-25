@@ -11,16 +11,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URL;
 import java.util.List;
-import bg.haskorders.delivery.repository.OrderRepository;
-import bg.haskorders.delivery.model.order.Order;
-import bg.haskorders.delivery.model.order.OrderStatus;
+
+import bg.haskorders.delivery.repository.cartRepo.CartStorage;
 
 public class RestaurantMenuPage extends JFrame {
     private final Restaurant restaurant;
     private final List<Product> productList;
     private final Cart cart;
     private JButton viewCartButton;
+   ;
 
     public RestaurantMenuPage(Restaurant restaurant, List<Product> productList, Cart cart,
                               RestaurantRepository restaurantRepo, ProductRepository productRepo, User user) {
@@ -199,7 +200,7 @@ public class RestaurantMenuPage extends JFrame {
 
         try {
             // First try loading from resources (for packaged JAR)
-            java.net.URL imageUrl = getClass().getResource(path);
+            URL imageUrl = getClass().getResource(path);
             if (imageUrl != null) {
                 return new ImageIcon(imageUrl);
             }
