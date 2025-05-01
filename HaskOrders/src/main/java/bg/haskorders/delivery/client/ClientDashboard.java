@@ -28,8 +28,6 @@ public class ClientDashboard extends JFrame {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private Cart sharedCart;
-
-
     private JFrame frame;
     private JPanel filterPanel;
     private JPanel restaurantsPanel;
@@ -119,6 +117,8 @@ public class ClientDashboard extends JFrame {
         titleLabel.setForeground(Color.WHITE);
         headerPanel.add(titleLabel, BorderLayout.CENTER);
 
+
+
         JButton filterButton = new JButton("Filter");
         styleButton(filterButton, new Color(255, 112, 67));
         filterButton.addActionListener(this::toggleFilters);
@@ -130,6 +130,11 @@ public class ClientDashboard extends JFrame {
         styleButton(filterButton, new Color(255, 112, 67));
         filterButton.addActionListener(this::toggleFilters);
         buttonPanel.add(filterButton);
+
+        JButton changePasswordButton = new JButton("Change Password");
+        styleButton(changePasswordButton, new Color(255, 193, 7));
+        changePasswordButton.addActionListener(this::showChangePasswordDialog);
+        buttonPanel.add(changePasswordButton);
 
         JButton trackOrderButton = new JButton("Track My Order");
         styleButton(trackOrderButton, new Color(33, 150, 243)); // blue
@@ -147,6 +152,72 @@ public class ClientDashboard extends JFrame {
         headerPanel.add(buttonPanel, BorderLayout.EAST);
         return headerPanel;
     }
+    private void showChangePasswordDialog(ActionEvent e) {
+        JPanel panel = new JPanel(new GridLayout(0, 1, 5, 5));
+
+        JPasswordField currentPasswordField = new JPasswordField(20);
+        JPasswordField newPasswordField = new JPasswordField(20);
+        JPasswordField confirmPasswordField = new JPasswordField(20);
+
+        panel.add(new JLabel("Current Password:"));
+        panel.add(currentPasswordField);
+        panel.add(new JLabel("New Password (min 8 characters):"));  // Updated label
+        panel.add(newPasswordField);
+        panel.add(new JLabel("Confirm New Password:"));
+        panel.add(confirmPasswordField);
+
+        int result = JOptionPane.showConfirmDialog(
+                frame,
+                panel,
+                "Change Password",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            String currentPassword = new String(currentPasswordField.getPassword());
+            String newPassword = new String(newPasswordField.getPassword());
+            String confirmPassword = new String(confirmPasswordField.getPassword());
+
+            if (!currentPassword.equals(clientUser.getPassword())) {
+                showErrorMessage("Current password is incorrect");
+                return;
+            }
+
+            if (newPassword.length() < 8) {  // Length check
+                showErrorMessage("Password must be at least 8 characters long");
+                return;
+            }
+
+            if (!newPassword.equals(confirmPassword)) {
+                showErrorMessage("New passwords do not match");
+                return;
+            }
+
+            if (newPassword.equals(currentPassword)) {
+                showErrorMessage("New password must be different from current password");
+                return;
+            }
+
+            clientUser.setPassword(newPassword);
+
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Password changed successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
+    }
+
+    private void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(
+                frame,
+                message,
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+        );
+    }
 
     private JPanel createFilterPanel() {
         JPanel panel = new JPanel(new GridLayout(0, 1, 10, 5));
@@ -155,7 +226,7 @@ public class ClientDashboard extends JFrame {
         panel.setVisible(false);
 
         panel.add(createCuisineFilterSection());
-        panel.add(createRatingFilterSection());
+        //panel.add(createRatingFilterSection());
 
         return panel;
     }
@@ -176,6 +247,7 @@ public class ClientDashboard extends JFrame {
 
         return sectionPanel;
     }
+    /*
 
     private JPanel createRatingFilterSection() {
         JPanel sectionPanel = new JPanel(new GridLayout(0, 1));
@@ -194,7 +266,7 @@ public class ClientDashboard extends JFrame {
 
         return sectionPanel;
     }
-
+        */
     private void toggleFilters(ActionEvent e) {
         filtersShown = !filtersShown;
         filterPanel.setVisible(filtersShown);
@@ -219,6 +291,7 @@ public class ClientDashboard extends JFrame {
         }
 
         // Apply Rating Filter
+        /*
         ButtonModel selectedRating = ratingGroup.getSelection();
         if (selectedRating != null) {
             String ratingText = selectedRating.getActionCommand();
@@ -232,7 +305,7 @@ public class ClientDashboard extends JFrame {
                         .collect(Collectors.toList());
             }
         }
-
+        */
         // Display Restaurants
         for (Restaurant restaurant : restaurants) {
             addRestaurantCard(restaurantsPanel, restaurant);
@@ -265,12 +338,12 @@ public class ClientDashboard extends JFrame {
         JLabel cuisineLabel = new JLabel(restaurant.getCuisineType().toString());
         cuisineLabel.setForeground(new Color(117, 117, 117));
 
-        JLabel ratingLabel = new JLabel(String.format("%.1f ★", restaurant.getRating()));
-        ratingLabel.setForeground(new Color(255, 152, 0));
+        //JLabel ratingLabel = new JLabel(String.format("%.1f ★", restaurant.getRating()));
+      //  ratingLabel.setForeground(new Color(255, 152, 0));
 
         infoPanel.add(nameLabel);
         infoPanel.add(cuisineLabel);
-        infoPanel.add(ratingLabel);
+     //   infoPanel.add(ratingLabel);
 
         JButton viewMenuButton = new JButton("View Menu");
         styleButton(viewMenuButton, new Color(76, 175, 80));

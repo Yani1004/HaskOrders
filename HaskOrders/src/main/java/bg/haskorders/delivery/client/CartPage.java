@@ -143,7 +143,8 @@ public class CartPage extends JFrame {
                 .orElse(0) + 1;
 
         new PaymentPage(cart, () -> {
-            if (onCartUpdated != null) onCartUpdated.run();
+            if (onCartUpdated != null) {
+                onCartUpdated.run(); }
             this.dispose();
         });
 

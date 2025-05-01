@@ -21,14 +21,19 @@ public class RestaurantMenuPage extends JFrame {
     private final List<Product> productList;
     private final Cart cart;
     private JButton viewCartButton;
-   ;
+    private Runnable updateCartCallback;
 
     public RestaurantMenuPage(Restaurant restaurant, List<Product> productList, Cart cart,
                               RestaurantRepository restaurantRepo, ProductRepository productRepo, User user) {
         this.restaurant = restaurant;
         this.productList = productList;
         this.cart = cart;
+        this.updateCartCallback = () -> updateCartButton();
         initialize(restaurantRepo, productRepo, user);
+    }
+
+    private void updateCartButton() {
+        viewCartButton.setText("View Cart (" + cart.getTotalItems() + ")");
     }
 
     private void initialize(RestaurantRepository restaurantRepo, ProductRepository productRepo, User user) {
@@ -89,16 +94,16 @@ public class RestaurantMenuPage extends JFrame {
 
         JLabel cuisineLabel = new JLabel("Cuisine: " + restaurant.getCuisineType());
         cuisineLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-
+/*
         JLabel ratingLabel = new JLabel("Rating: " + String.format("%.1f ★", restaurant.getRating()));
         ratingLabel.setFont(new Font("Arial", Font.BOLD, 14));
         ratingLabel.setForeground(new Color(255, 153, 0));
-
+*/
         infoPanel.add(nameLabel);
         infoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         infoPanel.add(cuisineLabel);
         infoPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        infoPanel.add(ratingLabel);
+    //    infoPanel.add(ratingLabel);
 
         headerPanel.add(infoPanel, BorderLayout.CENTER);
 
@@ -181,9 +186,9 @@ public class RestaurantMenuPage extends JFrame {
         viewCartButton = new JButton("View Cart (" + cart.getTotalItems() + ")");
         viewCartButton.setBackground(new Color(50, 150, 50));
         viewCartButton.setForeground(Color.WHITE);
-        viewCartButton.addActionListener(e -> new CartPage(cart, () -> {
-            viewCartButton.setText("View Cart (" + cart.getTotalItems() + ")");
-        }));
+        viewCartButton.addActionListener(e -> {
+            new CartPage(cart, updateCartCallback);
+        });
 
         bottomPanel.add(backButton);
         bottomPanel.add(viewCartButton);

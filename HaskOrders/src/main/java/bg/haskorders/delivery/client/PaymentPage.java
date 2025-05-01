@@ -130,14 +130,48 @@ public class PaymentPage extends JFrame {
         gbc.gridx = 1;
         form.add(toggleVisibility, gbc);
 
-        JButton payBtn = new JButton("Pay Now");
         gbc.gridx = 0; gbc.gridy = 2; gbc.gridwidth = 2;
+        form.add(new JLabel("Expiry Date (MM/YY):"), gbc);
+
+        gbc.gridy = 3;
+        JTextField expiryField = new JTextField();
+        form.add(expiryField, gbc);
+
+        gbc.gridy = 4;
+        form.add(new JLabel("CCV:"), gbc);
+
+        gbc.gridy = 5;
+        JTextField ccvField = new JTextField();
+        form.add(ccvField, gbc);
+        JButton payBtn = new JButton("Pay Now");
+        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2;
         form.add(payBtn, gbc);
 
         payBtn.addActionListener(e -> {
             String cardNumber = new String(cardField.getPassword()).trim();
+            String expiry = expiryField.getText().trim();
+            String ccv = ccvField.getText().trim();
+
             if (!cardNumber.matches("\\d{16}")) {
                 JOptionPane.showMessageDialog(this, "Card number must be exactly 16 digits.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (!expiry.matches("(0[1-9]|1[0-2])/\\d{2}")) {
+                JOptionPane.showMessageDialog(this, "Expiry must be in MM/YY format.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String[] parts = expiry.split("/");
+            int month = Integer.parseInt(parts[0]);
+            int year = Integer.parseInt(parts[1]) + 2000;
+            LocalDateTime expiryDate = LocalDateTime.of(year, month, 1, 0, 0).plusMonths(1).minusSeconds(1);
+            if (expiryDate.isBefore(LocalDateTime.now())) {
+                JOptionPane.showMessageDialog(this, "Card is expired.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (!ccv.matches("\\d{3}")) {
+                JOptionPane.showMessageDialog(this, "CCV must be exactly 3 digits.", "Invalid Input", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
@@ -179,9 +213,9 @@ public class PaymentPage extends JFrame {
                 .build();
 
         OrderRepository.getInstance().addOrder(newOrder);
-
-        if (onPaymentComplete != null) onPaymentComplete.run();
         cart.clear();
+        if (onPaymentComplete != null) onPaymentComplete.run();
+
         dispose();
     }
 }

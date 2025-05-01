@@ -74,7 +74,7 @@ public class Main {
                 .phone("555-1234")
                 .email("burgerhaven@example.com")
                 .cuisineType(CuisineType.BURGERS)
-                .rating(4.5)
+                //.rating(4.5)
                 .imagePath("/images/restaurants/burger-haven-logo.jpg")
                 .build());
 
@@ -85,7 +85,7 @@ public class Main {
                 .phone("555-5678")
                 .email("sushiroll@example.com")
                 .cuisineType(CuisineType.ASIAN)
-                .rating(4.7)
+                //.rating(4.7)
                 .imagePath("/images/restaurants/sushi-roll-logo.jpg")
                 .build());
 
@@ -96,7 +96,7 @@ public class Main {
                 .phone("555-9876")
                 .email("pizzaria@example.com")
                 .cuisineType(CuisineType.PIZZA)
-                .rating(4.3)
+               // .rating(4.3)
                 .imagePath("/images/restaurants/pizzaria-logo.jpg")
                 .build());
 
@@ -107,7 +107,7 @@ public class Main {
                 .phone("555-3456")
                 .email("sweettreats@example.com")
                 .cuisineType(CuisineType.DESERTS)
-                .rating(4.8)
+             //   .rating(4.8)
                 .imagePath("/images/restaurants/bakery-logo.jpg")
                 .build());
 

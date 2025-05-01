@@ -12,7 +12,7 @@ public class Restaurant {
     private String phone;
     private String email;
     private CuisineType cuisineType;
-    private double rating;
+   // private double rating;
     private String imagePath; // Add this field for image storage
 
     // You can add this method to get a default image if none is specified

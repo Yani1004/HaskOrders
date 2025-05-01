@@ -67,15 +67,27 @@ public class EmployeeDashboard {
         welcomeLabel.setFont(UIConstants.HEADER_FONT);
         welcomeLabel.setForeground(Color.WHITE);
 
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setOpaque(false);
+
+        JButton changePasswordButton = new JButton("Change Password");
+        changePasswordButton.setForeground(Color.WHITE);
+        changePasswordButton.addActionListener(e -> showChangePasswordDialog());
         JButton logoutButton = new JButton("Logout");
         logoutButton.setForeground(Color.WHITE);
         logoutButton.addActionListener(e -> {
             frame.dispose();
             new LoginView(Main.userList);
         });
+        buttonPanel.add(changePasswordButton);
+
+        buttonPanel.add(logoutButton);
+        headerPanel.add(buttonPanel, BorderLayout.EAST);
+
+
+
 
         headerPanel.add(welcomeLabel, BorderLayout.WEST);
-        headerPanel.add(logoutButton, BorderLayout.EAST);
 
         return headerPanel;
     }
@@ -623,7 +635,76 @@ public class EmployeeDashboard {
         button.setBackground(UIConstants.PRIMARY_COLOR);
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+        button.setFont(new Font("Arial", Font.BOLD, 12));
         button.addActionListener(action);
         return button;
+    }
+
+    private void showChangePasswordDialog() {
+        JPanel panel = new JPanel(new GridLayout(0, 1, 5, 5));
+
+        JPasswordField currentPasswordField = new JPasswordField(20);
+        JPasswordField newPasswordField = new JPasswordField(20);
+        JPasswordField confirmPasswordField = new JPasswordField(20);
+
+        panel.add(new JLabel("Current Password:"));
+        panel.add(currentPasswordField);
+        panel.add(new JLabel("New Password (min 8 characters):"));
+        panel.add(newPasswordField);
+        panel.add(new JLabel("Confirm New Password:"));
+        panel.add(confirmPasswordField);
+
+        int result = JOptionPane.showConfirmDialog(
+                frame,
+                panel,
+                "Change Password",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            String currentPassword = new String(currentPasswordField.getPassword());
+            String newPassword = new String(newPasswordField.getPassword());
+            String confirmPassword = new String(confirmPasswordField.getPassword());
+
+            if (!currentPassword.equals(employee.getPassword())) {
+                showErrorMessage("Current password is incorrect");
+                return;
+            }
+
+            if (newPassword.length() < 8) {
+                showErrorMessage("Password must be at least 8 characters long");
+                return;
+            }
+
+            if (!newPassword.equals(confirmPassword)) {
+                showErrorMessage("New passwords do not match");
+                return;
+            }
+
+            if (newPassword.equals(currentPassword)) {
+                showErrorMessage("New password must be different from current password");
+                return;
+            }
+
+            employee.setPassword(newPassword);
+
+            JOptionPane.showMessageDialog(
+                    frame,
+                    "Password changed successfully!",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
+    }
+
+    private void showErrorMessage(String message) {
+        JOptionPane.showMessageDialog(
+                frame,
+                message,
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+        );
     }
 }
