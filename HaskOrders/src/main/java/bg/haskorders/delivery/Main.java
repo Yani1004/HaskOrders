@@ -28,7 +28,7 @@ public class Main {
         userList = new ArrayList<>();
         String adminPassword = "12345678";
         userList.add(User.builder()
-                .userId(2)
+                .userId(1002)
                 .username("admin")
                 .password(adminPassword) // Not hashed
                 .name("System Administrator")
@@ -36,7 +36,7 @@ public class Main {
                 .role(Role.ADMIN)
                 .build());
         userList.add(User.builder()
-                .userId(1)
+                .userId(1001)
                 .username("yani")
                 .password("12345678")
                 .address("Razlog")
@@ -45,7 +45,7 @@ public class Main {
                 .role(Role.CLIENT)
                 .build());
         userList.add(User.builder()
-                .userId(3)
+                .userId(1003)
                 .username("teodor")
                 .password("12345678")
                 .address("Razlog")
@@ -54,7 +54,7 @@ public class Main {
                 .role(Role.EMPLOYEE)
                 .build());
         userList.add(User.builder()
-                .userId(4) // не знам дали ID-тата трябва да са лонг или не
+                .userId(1004) // не знам дали ID-тата трябва да са лонг или не
                 .username("ertaka")
                 .password("12345678")
                 .name("Erturul Test")
