@@ -145,7 +145,6 @@ public class AdminPanel {
 
             adminService.updateUserRole(username, Role.valueOf(newRole)).ifPresentOrElse(user -> {
                 tableModel.setValueAt(newRole, selectedRow, 3);
-                tableModel.setValueAt("Active", selectedRow, 4);
                 JOptionPane.showMessageDialog(frame,
                         "Role updated successfully!\n" +
                                 username + " is now a " + newRole,
